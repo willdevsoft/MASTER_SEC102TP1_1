@@ -2,12 +2,12 @@
 //1
 // How to get file size using WIN32 API ?
 // V1.0: début du TP avec l'utilisation de l'API win32: GetFileSizeEx
-
+//Enumération de fichiers dans un répertoire
 //How to get file size using WIN32 API ? Is there any direct API available ?
 
 #include <windows.h>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <atlstr.h> 
 #include <iostream>
 #include <tchar.h>
