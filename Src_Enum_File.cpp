@@ -7,12 +7,14 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <string>
+#include <string.h>
 #include <atlstr.h> 
 #include <iostream>
 #include <tchar.h>
 #include <strsafe.h>
+
 using namespace std;
+
 int main(void)
 {
 	HANDLE hEnt;
@@ -22,9 +24,16 @@ int main(void)
 	DWORD dwFileSize2;
 	DWORD dwFileType2;
 	LARGE_INTEGER filesize2;
+	char strFilePath[32];
+
+	cout << "Saisir le repertoire: " << endl;
+	cin >> strFilePath;
+	
+	CString strNewFilePath =CString( strFilePath) +"\\*.*";
 	// syntax test\*.* => pour chercher tout les fichiers test alors que test\\*.* =>tous les fichiers du répertoire test
-	StringCchCopy(szDir, MAX_PATH, TEXT("M:\\test\\*.*"));
-	if ((hEnt = FindFirstFile(szDir, &ent)) != INVALID_HANDLE_VALUE)
+	//StringCchCopy(szDir, MAX_PATH, TEXT("M:\\test\*.*"));
+
+	if ((hEnt = FindFirstFile(strNewFilePath, &ent)) != INVALID_HANDLE_VALUE)
 	{
 
 		do
