@@ -1,9 +1,8 @@
 // SEC102 TP1 Exercice1 by Wilfried Poisson
-//1
-// How to get file size using WIN32 API ?
-// V1.0: début du TP avec l'utilisation de l'API win32: GetFileSizeEx
-//Enumération de fichiers dans un répertoire
-//How to get file size using WIN32 API ? Is there any direct API available ?
+// Objectif: Enumération récursive de fichiers d'un répertoire fournis en paramétre du programme par l'utilisateur
+// <Nom du fichier><Taille><Type de fichier><Date création><Date modification><Dernier accés><Attributs fichier>
+// V0.1: début du TP avec l'utilisation de l'API win32: GetFileSizeEx
+
 
 #include <windows.h>
 #include <stdio.h>
@@ -26,7 +25,7 @@ int main(void)
 	LARGE_INTEGER filesize2;
 	char strFilePath[32];
 
-	cout << "Saisir le repertoire: " << endl;
+	cout << "Saisir le repertoire (exemple: M:\\<nom du repertoire>): " << endl;
 	cin >> strFilePath;
 	
 	CString strNewFilePath =CString( strFilePath) +"\\*.*";
@@ -44,7 +43,7 @@ int main(void)
 			filesize2.LowPart = ent.nFileSizeLow;
 			filesize2.HighPart = ent.nFileSizeHigh;
 			_tprintf(TEXT("hFile size: %10d\n"), filesize2.HighPart);
-			_tprintf(TEXT("  %s  %ld bytes type= %d\n"), ent.cFileName, filesize2.QuadPart, dwFileType2);
+			_tprintf(TEXT("Nom du fichier: %s Taille:  %ld bytes type: %d\n"), ent.cFileName, filesize2.QuadPart, dwFileType2);
 		} while (FindNextFile(hEnt, &ent));
 
 		FindClose(hEnt);
