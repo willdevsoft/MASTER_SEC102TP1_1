@@ -11,39 +11,50 @@
 #include <iostream>
 #include <tchar.h>
 #include <strsafe.h>
+#include "HeadEnumFile.h"
 
 using namespace std;
 
 int main(void)
 {
-	HANDLE hEnt;
-	WIN32_FIND_DATA ent;
-	CString folder = "M:\\test\*.*";
-	TCHAR szDir[MAX_PATH];
-	DWORD dwFileSize2;
-	DWORD dwFileType2;
-	LARGE_INTEGER filesize2;
+	//Déclaration variable
 	char strFilePath[32];
 
+	// Saisie du répertoire par l'utilisateur
 	cout << "Saisir le repertoire (exemple: M:\\<nom du repertoire>): " << endl;
 	cin >> strFilePath;
-	
-	CString strNewFilePath =CString( strFilePath) +"\\*.*";
-	// syntax test\*.* => pour chercher tout les fichiers test alors que test\\*.* =>tous les fichiers du répertoire test
-	//StringCchCopy(szDir, MAX_PATH, TEXT("M:\\test\*.*"));
 
-	if ((hEnt = FindFirstFile(strNewFilePath, &ent)) != INVALID_HANDLE_VALUE)
+	// cast en CString avec concaténation de \\*.*
+	CString strNewFilePath = CString(strFilePath) + "\\*.*"; 	// \\*.* =>tous les fichiers du répertoire test
+
+	// Appel de la fonction EnumFilesDirectory
+	EnumFilesDirectory(strNewFilePath);
+
+}
+void EnumFilesDirectory(CString strFilePath)
+{	
+	// Déclaration des variables
+	HANDLE hEnt;
+	WIN32_FIND_DATA ent;
+	DWORD dwFileSize;
+	DWORD dwFileType;
+	LARGE_INTEGER filesize;
+
+	// Utilisation de l'API FinFirstFile et FindNextFile pour récupérer le handle de chaque fichier du répertoire
+
+	if ((hEnt = FindFirstFile(strFilePath, &ent)) != INVALID_HANDLE_VALUE)
 	{
-
 		do
 		{
-			dwFileType2 = GetFileType(hEnt);
-			//dwFileSize2 = GetFileSize(hEnt, NULL);
-			dwFileSize2 = GetFileSize(hEnt, NULL);
-			filesize2.LowPart = ent.nFileSizeLow;
-			filesize2.HighPart = ent.nFileSizeHigh;
-			_tprintf(TEXT("hFile size: %10d\n"), filesize2.HighPart);
-			_tprintf(TEXT("Nom du fichier: %s Taille:  %ld bytes type: %d\n"), ent.cFileName, filesize2.QuadPart, dwFileType2);
+			// Récupére le type du fichier
+			dwFileType = GetFileType(hEnt);
+			// Récupére la taille du fichier
+			dwFileSize = GetFileSize(hEnt, NULL);
+			filesize.LowPart = ent.nFileSizeLow;
+			filesize.HighPart = ent.nFileSizeHigh;
+			// Affiche <Nom du fichier><Taille><type>
+			_tprintf(TEXT("hFile size: %10d\n"), filesize.HighPart);
+			_tprintf(TEXT("Nom du fichier: %s Taille:  %ld bytes type: %d\n"), ent.cFileName, filesize.QuadPart, dwFileType);
 		} while (FindNextFile(hEnt, &ent));
 
 		FindClose(hEnt);
