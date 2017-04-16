@@ -30,9 +30,10 @@ int main(void)
 	// Appel de la fonction EnumFilesDirectory
 	EnumFilesDirectory(strNewFilePath);
 
+
 }
 void EnumFilesDirectory(CString strFilePath)
-{	
+{
 	// Déclaration des variables
 	HANDLE hEnt;
 	WIN32_FIND_DATA ent;
@@ -40,7 +41,7 @@ void EnumFilesDirectory(CString strFilePath)
 	DWORD dwFileType;
 	LARGE_INTEGER filesize;
 	FILETIME ftCreate, ftAccess, ftWrite;
-	SYSTEMTIME stUTC, stLocal;
+	SYSTEMTIME stUTC, stLocal, stCreate, stAccess, stWrite;
 	DWORD dwRet;
 	LPTSTR lpszString;
 	DWORD dwSize;
@@ -66,46 +67,24 @@ void EnumFilesDirectory(CString strFilePath)
 			);
 			GetFileTime(hEnt, &ftCreate, &ftAccess, &ftWrite);
 
-			// Convert the last-write time to local time.
+			// Conversion de la date de la dernière écriture.
 			FileTimeToSystemTime(&ftWrite, &stUTC);
-			SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal);
+			SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreate);
 
-			// Build a string showing the date and time.
-//			dwRet = StringCchPrintf(lpszString, dwSize,
-	//			TEXT("%02d/%02d/%d  %02d:%02d"),
-//				stLocal.wMonth, stLocal.wDay, stLocal.wYear,
-	//			stLocal.wHour, stLocal.wMinute);
-			_tprintf(TEXT("Mois: %02d "), stLocal.wMonth);
-		
+			FileTimeToSystemTime(&ftCreate, &stUTC);
+			SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stAccess);
 
-			// Affiche <Nom du fichier><Taille><type>
-			_tprintf(TEXT("Nom du fichier: %s Taille:  %ld bytes type: %d\n"), ent.cFileName, filesize.QuadPart, dwFileType);
+			FileTimeToSystemTime(&ftCreate, &stUTC);
+			SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWrite);
+
+			// Affiche <Nom du fichier><Taille><type><création><accés><écriture>
+			_tprintf(TEXT("Nom du fichier: %s \n Taille:  %ld bytes type: %d\n"), ent.cFileName, filesize.QuadPart, dwFileType);
+			_tprintf(TEXT("Cree le: %02d/%02d/%d a %02d:%02d\n "), stCreate.wDay, stCreate.wMonth, stCreate.wYear, stCreate.wHour, stCreate.wMinute);
+			_tprintf(TEXT("Dernier acces en écriture: %02d/%02d/%d à %02d:%02d\n\n "), stWrite.wDay, stWrite.wMonth, stWrite.wYear, stWrite.wHour, stWrite.wMinute);
+
 		} while (FindNextFile(hEnt, &ent));
 
 		FindClose(hEnt);
 	}
 }
-BOOL GetLastWriteTime(HANDLE hFile, LPTSTR lpszString, DWORD dwSize)
-{
-	FILETIME ftCreate, ftAccess, ftWrite;
-	SYSTEMTIME stUTC, stLocal;
-	DWORD dwRet;
 
-	// Retrieve the file times for the file.
-	if (!GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite))
-		return FALSE;
-
-	// Convert the last-write time to local time.
-	FileTimeToSystemTime(&ftWrite, &stUTC);
-	SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal);
-
-	// Build a string showing the date and time.
-	dwRet = StringCchPrintf(lpszString, dwSize,
-		TEXT("%02d/%02d/%d  %02d:%02d"),
-		stLocal.wMonth, stLocal.wDay, stLocal.wYear,
-		stLocal.wHour, stLocal.wMinute);
-
-	if (S_OK == dwRet)
-		return TRUE;
-	else return FALSE;
-}

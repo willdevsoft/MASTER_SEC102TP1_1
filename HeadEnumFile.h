@@ -8,4 +8,3 @@ Rôle : prototypes des fonctions de l'énumération de fichiers
 */
 
 void EnumFilesDirectory(CString strFilePath);
-BOOL GetLastWriteTime(HANDLE hFile, LPTSTR lpszString, DWORD dwSize);
